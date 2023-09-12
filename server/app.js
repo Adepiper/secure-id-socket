@@ -1,39 +1,38 @@
 const express = require("express");
-const socket = require("socket.io");
-const bodyParser = require("body-parser");
-const cors = require("cors");
 
 const app = express();
-app.use(cors({ origin: "*" }));
-app.use(bodyParser);
-let x = true;
-
-const server = app.listen(3000, () => {
-  console.log("Started in 3000");
+const httpServer = require("http").createServer(app);
+const io = require("socket.io")(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
 });
 
-const io = socket(server);
+httpServer.listen(3000);
 
-io.sockets.on("connection", (socket) => {
+let isSendingData = true;
+
+io.on("connection", (socket) => {
   sendData(socket);
 });
 
 function sendData(socket) {
-  if (x) {
+  if (isSendingData) {
     socket.emit(
       "dataset1",
-      Array.from({ length: 8 }, () => Math.floor(Math.random() * 590) + 10)
+      Array.from({ length: 8 }, () => Math.floor(Math.random() * 600) + 10)
     );
-    x = !x;
+    isSendingData = !isSendingData;
   } else {
     socket.emit(
       "dataset2",
-      Array.from({ length: 8 }, () => Math.floor(Math.random() * 590) + 10)
+      Array.from({ length: 8 }, () => Math.floor(Math.random() * 600) + 10)
     );
-    x = !x;
+    isSendingData = !isSendingData;
   }
-  console.log(`data is ${x}`);
+
   setTimeout(() => {
     sendData(socket);
-  }, 3000);
+  }, 5000);
 }
