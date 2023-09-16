@@ -3,7 +3,7 @@ import { Chart, registerables } from 'chart.js';
 
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000');
+const socket = io('https://secure-socket-server-production.up.railway.app');
 
 Chart.register(...registerables);
 
